@@ -65,7 +65,7 @@ if __name__ == "__main__":
         ff_dim=256,
         num_layers_spatial=0,
         num_layers_temporal=3,
-        dropout=0.15,             # slightly lower if underfitting; raise to 0.2–0.3 if overfitting
+        dropout=0.15,            
         use_vm_embed=True,
         use_time_embed=True,
         grad_ckpt=True,           # checkpoint encoders to save VRAM
@@ -108,29 +108,29 @@ if __name__ == "__main__":
             y_test_vm_pred = predict_vm_series_on_subset(model, test_dataset, device, vm_index=vm_index, invert=True)
 
             # ---- Time index and boundaries ----
-            time_index = np.arange(len(full_series))  # or seconds if available
-            train_end_idx = len(y_train_vm)  # exclusive end
+            time_index = np.arange(len(full_series)) 
+            train_end_idx = len(y_train_vm) 
             val_end_idx = train_end_idx + len(y_val_vm)
             test_start_idx = len(y_train_vm) + len(y_val_vm)
 
-            """ plot_test_set_only(
+            plot_test_set_only(
                 time_index=time_index,
-                full_series=full_series,           # original units
+                full_series=full_series,           
                 test_start_idx=test_start_idx,
-                pred_series=y_test_vm_pred,        # original units
+                pred_series=y_test_vm_pred,        
                 title=f"Model={model_type} | Lookback={seq_len} | Predict={pred_len} | Dataset={dataset_name}",
                 vm_index=vm_index,
                 save_path=f"cpu_usage_vm{vm_index+1}_test_only.pdf"
             )
-            """
+
             pred_train_series = predict_vm_series_on_subset(model, train_dataset, device, vm_index=vm_index, invert=True)
             pred_val_series = predict_vm_series_on_subset(model, val_dataset, device, vm_index=vm_index, invert=True)
             pred_test_series = predict_vm_series_on_subset(model, test_dataset, device, vm_index=vm_index, invert=True)
 
-            """ 
+
             plot_full_continuous_prediction(
                 model=model,
-                dataset=dataset,  # not just test_dataset: the full dataset
+                dataset=dataset,
                 device=device,
                 train_end_idx=len(train_dataset),
                 val_end_idx=len(train_dataset) + len(val_dataset),
@@ -140,21 +140,21 @@ if __name__ == "__main__":
                 title=f"Model={model_type} | Lookback={seq_len} | Predict={pred_len} | Dataset={dataset_name}",
                 save_path=f"cpu_usage_vm{vm_index+1}_continuous.pdf"
             )
-            """
+
             
             plot_input_output_window(
                 model=model,
-                dataset=val_dataset,   # oppure test_dataset
+                dataset=val_dataset,  
                 device=device,
-                sample_idx=0,          # quale finestra vuoi plottare
-                vm_index=vm_index,            # quale VM vuoi plottare (indice)
-                seq_len=seq_len,            # lunghezza finestra input
-                pred_len=pred_len,           # lunghezza predizione
+                sample_idx=0,          
+                vm_index=vm_index,          
+                seq_len=seq_len,           
+                pred_len=pred_len,         
                 title=f"Model={model_type} | Lookback={seq_len} | Predict={pred_len} | Dataset={dataset_name} | VM={vm_index+1}",
                 save_path=f"window_{vm_index}.pdf"
             )
 
 
-#avg_time, per_vm_times, ci_low, ci_high = measure_inference_time(model, test_dataset, device, range(10))
-#print(f"Average inference time over 10 VMs: {avg_time:.6f} seconds")
-#print(f"95% confidence interval: [{ci_low:.6f}, {ci_high:.6f}] seconds")
+avg_time, per_vm_times, ci_low, ci_high = measure_inference_time(model, test_dataset, device, range(10))
+print(f"Average inference time over 10 VMs: {avg_time:.6f} seconds")
+print(f"95% confidence interval: [{ci_low:.6f}, {ci_high:.6f}] seconds")
